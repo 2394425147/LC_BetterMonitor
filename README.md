@@ -1,9 +1,9 @@
 ## Tweaks
 
 - Change scrap icon by value
+- Change compass location on monitor
 
 ## Planned
 
-- Change compass location on monitor
-- Change compass direction in buildings
+- Always show compass when player has a walkie-talkie
 - ...
