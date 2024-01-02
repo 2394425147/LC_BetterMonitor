@@ -11,7 +11,7 @@ using UnityEngine;
 namespace BetterMonitor.Patches.ScrapShapePatch
 {
     [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.Start))]
-    public sealed class ScrapObjectPatch
+    public static class ScrapObjectPatch
     {
         private static readonly int                      MainTexture    = Shader.PropertyToID("_UnlitColorMap");
         private static readonly SortedList<int, Texture> ScrapIcons     = new();
