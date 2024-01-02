@@ -1,9 +1,9 @@
 {
   "name": "BetterMonitor",
   "author": "fumiko",
-  "version_number": "0.0.2",
+  "version_number": "0.0.3",
   "website_url": "https://github.com/2394425147/LC_BetterMonitor",
-  "description": "Small tweaks to the monitor. (WIP)",
+  "description": "Small tweaks to the monitor.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ]
