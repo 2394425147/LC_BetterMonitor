@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace BetterMonitor.Patches.ScrapShapePatch
 {
-    [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.Start))]
+    [HarmonyPatch(typeof(GrabbableObject))]
     public static class ScrapObjectPatch
     {
         private static readonly int                      MainTexture    = Shader.PropertyToID("_UnlitColorMap");
@@ -77,6 +77,7 @@ namespace BetterMonitor.Patches.ScrapShapePatch
         }
 
         [HarmonyPostfix]
+        [HarmonyPatch(nameof(GrabbableObject.Start))]
         public static void Postfix(GrabbableObject __instance)
         {
             if (!__instance.itemProperties.isScrap)

@@ -1,4 +1,6 @@
 ﻿using BepInEx;
+using BetterMonitor.Models;
+using BetterMonitor.Patches.ManualCameraRendererPatch;
 using BetterMonitor.Patches.ScrapShapePatch;
 using HarmonyLib;
 
@@ -22,6 +24,9 @@ namespace BetterMonitor
                 harmony.PatchAll(typeof(ScrapObjectPatch));
                 ScrapObjectPatch.Initialize();
             }
+
+            if (Configuration.CompassLocation.Value != CompassLocationType.BottomRight)
+                harmony.PatchAll(typeof(MonitorPatch));
 
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
