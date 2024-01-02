@@ -17,8 +17,12 @@ namespace BetterMonitor
 
             var harmony = new Harmony("com.fumiko.bettermonitor");
 
-            harmony.PatchAll(typeof(ScrapObjectPatch));
-            ScrapObjectPatch.Initialize();
+            if (Configuration.DisplayScrapByValue.Value)
+            {
+                harmony.PatchAll(typeof(ScrapObjectPatch));
+                ScrapObjectPatch.Initialize();
+            }
+
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
 
