@@ -31,8 +31,16 @@ namespace BetterMonitor
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
 
-        public static void LogError(string s) => Instance.Logger.LogError(s);
+        public static void LogError(string s)
+        {
+            if (Configuration.VerboseLogging.Value)
+                Instance.Logger.LogError(s);
+        }
 
-        public static void LogInfo(string s) => Instance.Logger.LogInfo(s);
+        public static void LogInfo(string s)
+        {
+            if (Configuration.VerboseLogging.Value)
+                Instance.Logger.LogInfo(s);
+        }
     }
 }

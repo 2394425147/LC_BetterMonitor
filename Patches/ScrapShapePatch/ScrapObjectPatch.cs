@@ -13,9 +13,11 @@ namespace BetterMonitor.Patches.ScrapShapePatch
     [HarmonyPatch(typeof(GrabbableObject))]
     public static class ScrapObjectPatch
     {
-        private static readonly int                      MainTexture    = Shader.PropertyToID("_UnlitColorMap");
-        private static readonly SortedList<int, Texture> ScrapIcons     = new();
-        private static readonly string                   ScrapIconsPath = Path.Combine(Paths.PluginPath, "ScrapIcons");
+        private static readonly string ScrapIconsPath = Path.Combine(Paths.PluginPath, "ScrapIcons");
+
+        private static readonly int                         MainTexture            = Shader.PropertyToID("_UnlitColorMap");
+        private static readonly SortedList<int, Texture>    ScrapIcons             = new();
+        private static readonly Dictionary<string, Texture> NamedScrapReplacements = new();
 
         public static void Initialize()
         {
@@ -36,22 +38,30 @@ namespace BetterMonitor.Patches.ScrapShapePatch
                 if (extension.ToLowerInvariant() != ".png")
                     continue;
 
-                if (!int.TryParse(name, out var scrapValue))
-                    continue;
+                var texture = File.ReadAllBytes(file).ToTexture2D();
 
-                AddScrapIcon(scrapValue, File.ReadAllBytes(file).ToTexture2D());
+                if (int.TryParse(name, out var scrapValue))
+                {
+                    ScrapIcons.Add(scrapValue, texture);
+                    Plugin.LogInfo($"Added icon for scrap value {name}");
+                }
+                else
+                {
+                    NamedScrapReplacements.Add(name, texture);
+                    Plugin.LogInfo($"Added icon for scrap {name}");
+                }
             }
 
             if (ScrapIcons.Count > 0)
                 return;
 
             using var fallbackIconStream = ModResources.Get("ScrapIcons.0.png");
-            var bytes                     = new byte[fallbackIconStream.Length];
+            var       bytes              = new byte[fallbackIconStream.Length];
 
             if (fallbackIconStream.Read(bytes, 0, bytes.Length) != 0)
                 return;
 
-            AddScrapIcon(0, bytes.ToTexture2D());
+            ScrapIcons.Add(0, bytes.ToTexture2D());
         }
 
         private static void InitializeDirectory()
@@ -71,14 +81,12 @@ namespace BetterMonitor.Patches.ScrapShapePatch
 
                 using var file = File.Create(path);
                 ModResources.Get($"ScrapIcons.{scrapIcon}").CopyTo(file);
-
-                Plugin.LogInfo($"Created default scrap icon at {path}");
             }
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(GrabbableObject.Start))]
-        public static void Postfix(GrabbableObject __instance)
+        public static void StartPostfix(GrabbableObject __instance)
         {
             if (!__instance.itemProperties.isScrap)
                 return;
@@ -88,26 +96,24 @@ namespace BetterMonitor.Patches.ScrapShapePatch
 
             var materialProperties = new MaterialPropertyBlock();
             meshRenderer.GetPropertyBlock(materialProperties);
-            materialProperties.SetTexture(MainTexture, FindScrapIcon(__instance.scrapValue));
+            materialProperties.SetTexture(MainTexture, FindScrapIcon(__instance));
             meshRenderer.SetPropertyBlock(materialProperties);
         }
 
-        private static Texture FindScrapIcon(int value)
+        private static Texture FindScrapIcon(GrabbableObject item)
         {
+            if (NamedScrapReplacements.TryGetValue(item.itemProperties.itemName, out var texture))
+                return texture;
+
             for (var i = 0; i < ScrapIcons.Count; i++)
             {
                 var scrapValue = ScrapIcons.Keys[i];
 
-                if (scrapValue >= value)
+                if (scrapValue >= item.scrapValue)
                     return ScrapIcons.Values[Mathf.Max(0, i - 1)];
             }
 
             return ScrapIcons.Values[^1];
-        }
-
-        private static void AddScrapIcon(int minValue, Texture texture)
-        {
-            ScrapIcons.Add(minValue, texture);
         }
     }
 }
