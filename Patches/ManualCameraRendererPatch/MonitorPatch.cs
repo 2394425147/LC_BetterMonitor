@@ -14,7 +14,7 @@ namespace BetterMonitor.Patches.ManualCameraRendererPatch
         [HarmonyPatch(nameof(ManualCameraRenderer.Update))]
         public static void UpdatePostfix(ManualCameraRenderer __instance)
         {
-            var radarTarget = __instance.targetedPlayer;
+            var radarTarget = __instance.radarTargets[__instance.targetTransformIndex];
 
             if (__instance.cam        != __instance.mapCamera ||
                 radarTarget.transform == null)
