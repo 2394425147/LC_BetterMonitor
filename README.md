@@ -5,6 +5,7 @@
 - Scrap icons change shape depending on their value
 - Set icons for specific scrap items
 - Monitor compass can now be centered to the player, and optionally measure the player's distance to the ship
+- Monitor view can be aligned to players
 - *Monitor compass works inside buildings* **(WIP)**
 
 ## Usage Guide
